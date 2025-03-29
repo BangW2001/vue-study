@@ -4,11 +4,11 @@
 
 # Vue快速入门
 
+## vue基本概念
+
 [vue](https://cn.vuejs.org/)是一个用于构建用户界面的渐进式`JavaScript`框架
 
-## vue快速上手
-
-#### 创建Vue实例并初始化渲染
+### 创建Vue实例并初始化渲染
 
 1. 准备容器，即Vue所管理的元素范围
 2. 引包，可以从官方文档找到引用的链接地址（开发版本/生产版本）
@@ -76,39 +76,295 @@
 
 
 
+### Vue核心特性：响应式
+
+响应式：数据发生变化，视图自动更新
+
+本质上是数据改变，vue底层会监听到数据修改，然后进行相关的dom操作，来自动更新视图
+
+- 访问数据里面的属性值：对象.属性名
+
+- 修改数据：对象.属性名=新值
+
+```html
+<body>
+  <div id="app">
+    {{message}}
+  </div>
+  <button id="change" onclick="change()">变换</button>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        message: "hello word"
+      }
+    })
+    function change() {
+      //改变message的值
+      app.message = "we are family"
+    }
+  </script>
+</body>
+```
 
 
 
+### Vue开发者工具
 
+[Vue DevTools](https://devtools.vuejs.org/) 是一个插件，能够方便开发者调试Vue应用
 
+安装：通过谷歌应用商店安装（国内可以在 [极简插件](https://chrome.zzzmh.cn/index)上下载）
 
+![image-20250329214623757](01-vue-介绍/image-20250329214623757.png)
 
+安装之后在浏览器页面右击检查，可以看到对用选项
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![image-20250329221240760](01-vue-介绍/image-20250329221240760.png)
 
 ## vue指令
+
+`Vue`会根据不同的指令，针对标签实现不同的功能
+
+指令：带有`v-`前缀的特殊标签属性
+
+常见的指令参照[官方文档](https://v2.cn.vuejs.org/v2/api/#%E6%8C%87%E4%BB%A4)
+
+### v-html
+
+相当于`innerHtml`能够对表达式进行解析
+
+```html
+<body>
+  <div id="app">
+    <div v-html="msg"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        msg: `
+        <a href="https://www.baidu.com">百度</>
+        `
+      }
+    })
+  </script>
+</body>
+```
+
+### v-show
+
+功能：根据表达式真假，控制元素的显示与隐藏
+
+语法：`v-show="表达式"`，表达式值为`true`显示，`false`隐藏
+
+### v-if
+
+功能：根据表达式真假，控制元素的显示与隐藏（条件渲染）
+
+语法：`v-if="表达式"`，表达式值为`true`显示，`false`隐藏
+
+**v-show & v-if的区别**
+
+`v-show`是通过`display`属性来控制元素的显示与隐藏，而`v-if`是通过条件渲染来实现的
+
+当表达式值为`false`时，两者都会使元素不显示，但是存在区别：
+
+- `v-if`此时是通过`display=none`来不显示元素
+- `v-if`此时通过移除元素来实现隐藏
+
+所以`v-show`适用于频繁切换隐藏的场景，因为`v-if`会根据表达式值不断创建和销毁元素，更加耗费性能
+
+不频繁切换的场景建议使用`v-if`
+
+```html
+<body>
+  <div id="app">
+    <div class="box" v-show="flag">v-show控制的盒子</div>
+    <div class="box" v-if="flag">v-if控制的盒子</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        flag: false
+      }
+    })
+  </script>
+</body>
+```
+
+![image-20250329224148152](01-vue-介绍/image-20250329224148152.png)
+
+### v-else和v-else-if
+
+两者是辅助`v-if`来进行条件渲染，适用于多条件判断场景
+
+```html
+<body>
+  <div id="app">
+    <!-- 根据分数值显示不同的文字-->
+    <div class="box" v-if="score>=90">优秀</div>
+    <div class="box" v-else-if="score>=80">良好</div>
+    <div class="box" v-else-if="score>=60">合格</div>
+    <div class="box" v-else>不合格</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        score: 90
+      }
+    })
+  </script>
+</body>
+```
+
+### vue-on
+
+功能：注册事件，即添加监听+提供处理逻辑
+
+ 语法：
+
+- v-on:事件名="内联语句"
+
+  ```html
+  <body>
+    <div id="app">
+      <div class="box">{{score}}</div>
+      <!--点击按钮 score值会加一-->
+      <button v-on:click="score++"></button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+      const app = new Vue({
+        el: "#app",
+        data: {
+          score: 90
+        }
+      })
+    </script>
+  </body>
+  ```
+
+- v-on:事件名="mehods中的方法名"
+
+- 简写：@事件名=xxx
+
+  ```html
+  <body>
+    <div id="app">
+      <div class="box">{{score}}</div>
+      <!--点击按钮 score值会加一-->
+      <button v-on:click="add"></button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+      const app = new Vue({
+        el: "#app",
+        data: {
+          score: 90
+        },
+        methods: {//mehods里面提供Vue实例的所有方法
+          add() {
+            app.score--
+          }
+        }
+      })
+    </script>
+  </body>
+  ```
+
+v-on指令可以调用传参
+
+```html
+v-on:click=方法名(参数1,参数2)
+```
+
+
+
+### v-bind
+
+功能：动态的设置html标签的属性值，比如`src`、`title`、`color`等
+
+语法：`v-bind:属性名="表达式"`
+
+```html
+<body>
+  <div id="app">
+    <div v-bind:style="{ color: color }" class="box">{{score}}</div>
+    <!--按钮改变div文本颜色-->
+    <button v-on:click="red">红色</button>
+    <button v-on:click="green">绿色</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        score: 90,
+        color: "red"
+      },
+      methods: {//mehods里面提供Vue实例的所有方法
+        add() {
+          app.score--
+        },
+        red() {
+          app.color = "red"
+        },
+        green() {
+          app.color = "green"
+        }
+      }
+    })
+  </script>
+</body>
+```
+
+
+
+### v-for
+
+功能：基于数据循环，多次渲染整个元素
+
+ 语法：
+
+- 遍历数组
+  - `v-for="(item,index) in 数组"`
+  - `v-for="item in 数组"`
+
+```html
+<body>
+  <div id="app">
+    <!--显示所有图片-->
+    <img v-bind:src="item" alt="" v-for="item in imageList" />
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        imageList: ["./imgs/10-01.png", "./imgs/10-02.png"
+          , "./imgs/11-00.gif", "./imgs//11-01.gif", "./imgs/11-03.gif",
+          "./imgs/11-04.png", "./imgs/11-05.png"
+        ],
+        index: 0
+      },
+      methods: {//mehods里面提供Vue实例的所有方法
+
+      }
+    })
+  </script>
+```
+
+
+
+
+
+
 
 
 
