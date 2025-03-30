@@ -223,7 +223,7 @@
 </body>
 ```
 
-### vue-on
+### v-on
 
 功能：注册事件，即添加监听+提供处理逻辑
 
@@ -360,13 +360,258 @@ v-on:click=方法名(参数1,参数2)
   </script>
 ```
 
+```html
+<body>
+  <div id="app">
+    <ul>
+      <li v-for="item in bookList">
+        《{{item.name}}》--{{item.author}}
+        <button @click="del(item.id)">删除</button>
+      </li>
+    </ul>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        bookList: [{ "id": 0, "name": "红楼梦", "author": "曹雪芹" },
+        { "id": 1, "name": "西游记", "author": "吴承恩" },
+        { "id": 2, "name": "水浒传", "author": "施耐庵" },
+        { "id": 3, "name": "三国演义", "author": "罗贯中" }
+        ]
+      },
+      methods: {//mehods里面提供Vue实例的所有方法
+        del(id) {
+          this.bookList = this.bookList.filter((item) => item.id != id)
+        }
+      }
+    })
+  </script>
+</body>
+```
 
+![v-for.gif](01-vue-介绍/v-for.gif)
 
+#### v-for中的key
 
+key的作用：给元素添加唯一标识，便于Vue进行列表项的正确排序复用
 
+语法：`v-for=xxx :key=xxx`
 
+注意：
 
+- key的值只能是字符串或者数字类型
+- key的值必须具有唯一性
+- 推荐使用id作为key，不推荐使用index作为key（因为index可能会发生变化，不对应）
 
+```html
+<body>
+  <div id="app">
+    <ul>
+      <li v-for="item in bookList" :key="item.id">
+        《{{item.name}}》--{{item.author}}
+        <button @click="del(item.id)">删除</button>
+      </li>
+    </ul>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        bookList: [{ "id": 0, "name": "红楼梦", "author": "曹雪芹" },
+        { "id": 1, "name": "西游记", "author": "吴承恩" },
+        { "id": 2, "name": "水浒传", "author": "施耐庵" },
+        { "id": 3, "name": "三国演义", "author": "罗贯中" }
+        ]
+      },
+      methods: {//mehods里面提供Vue实例的所有方法
+        del(id) {
+          this.bookList = this.bookList.filter((item) => item.id != id)
+        }
+      }
+    })
+  </script>
+</body>
+```
+
+### v-model
+
+功能：给表单元素使用，双向数据绑定，便于快速获取或设置表单元素内容
+
+- 数据变化了，视图自动更新
+- 视图变化了，数据自动更新
+
+语法：`v-model=变量`
+
+```html
+<body>
+  <div id="app">
+    <form action="/">
+      <label>用户名：</label><input type="text" v-model="user.name" /><br />
+      <label>密码：</label><input type="text" v-model="user.pwd" />
+    </form>
+
+    <p>用户名:{{user.name}},密码:{{user.pwd}}</p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        user: {
+          name: "",
+          pwd: ""
+        }
+      }
+    })
+  </script>
+</body>
+```
 
 ## 综合案例--记事本
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .notebook {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 300px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #d9534f;
+      margin-bottom: 20px;
+    }
+
+    .task-input {
+      width: calc(100% - 22px);
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .add-task {
+      width: 100%;
+      padding: 10px;
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .task-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .task-list li span {
+      flex-grow: 1;
+    }
+
+    .delete-task {
+      background: none;
+      border: none;
+      color: #d9534f;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .task-count {
+      text-align: right;
+      margin: 10px 0;
+      color: #555;
+    }
+
+    .clear-tasks {
+      width: 100%;
+      padding: 10px;
+      background-color: #5bc0de;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="notebook">
+      <h1>记事本</h1>
+      <div class="task-input-container">
+        <input type="text" placeholder="请输入任务" class="task-input" v-model="inputTask">
+        <button class="add-task" @click="add">添加任务</button>
+      </div>
+      <ul class="task-list">
+        <li v-for="item,index in taskList" :key="item.id"><span>{{index+1}}. {{item.text}}</span> <button
+            class="delete-task" @click="del(item.id)">x</button></li>
+      </ul>
+      <div class="task-count">合计: <span>{{taskList.length}}</span></div>
+      <button class="clear-tasks" @click="clear">清空任务</button>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        inputTask: "",
+        taskList: []
+      },
+      methods: {
+        clear() {
+          this.taskList = []
+        },
+        add() {
+          if (this.inputTask.length > 0) {
+            this.taskList.push({ id: this.taskList.length, text: this.inputTask })
+            this.inputTask = ""
+          }
+        },
+        del(id) {
+          this.taskList = this.taskList.filter((item) => item.id != id)
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
+```
+
+**效果：**
+
+![记事本](01-vue-介绍/记事本.gif)
