@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div>
+            <input type="text" placeholder="用户名" v-model.trim="username"/><br>
+            <input type="text" placeholder="年龄" v-model.number="age"/>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el:"#app",
+            data:{
+                username:"",
+                age:""
+            }
+        })
+    </script>
+</body>
+</html>

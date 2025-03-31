@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <input type="text" placeholder="用户名" v-model="inputText"/>
+        <br/>
+        <textarea placeholder="长文本" v-model="textArea"></textarea>
+        <br/>
+        <label>篮球</label><input type="checkbox" value="篮球" name="hobby" v-model="hobby"/>
+        <label>足球</label><input type="checkbox" value="足球" name="hobby"v-model="hobby"/>
+        <label>乒乓球</label><input type="checkbox" value="乒乓球" name="hobby" v-model="hobby"/>
+        <br/>
+        <label>男</label><input type="radio" value="男" name="gender" v-model="gender"/>
+        <label>女</label><input type="radio" value="女" name="gender" v-model="gender"/>
+        <br/>
+        <select v-model="nation">
+            <option value="中国">中国</option>
+            <option value="韩国">韩国</option>
+            <option value="日本">日本</option>
+        </select>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el:"#app",
+            data:{
+                inputText:"啦啦啦啦啦",
+                textArea:"好好看看啦啦啦",
+                hobby:["篮球","乒乓球"],
+                gender:"女",
+                nation:"日本"
+            }
+        })
+    </script>
+</body>
+</html>
