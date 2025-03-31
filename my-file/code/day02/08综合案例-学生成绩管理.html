@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成绩管理</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    /* .score {
+      color: red;
+    } */
+
+    form {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    label {
+      margin-right: 10px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 5px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 5px 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .failed {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="container">
+      <table>
+        <thead>
+          <tr>
+            <th>编号</th>
+            <th>科目</th>
+            <th>成绩</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in scoreList" :key="item.id">
+            <td>{{item.id}}</td>
+            <td>{{item.subject}}</td>
+            <td class="score" :class="{failed:item.score<60}">{{item.score}}</td>
+            <td><a href="#" @click="del(item.id)">删除</a></td>
+          </tr>
+          <tr>
+            <td colspan="2">总分：{{sumScore}}</td>
+            <td colspan="2">平均分：{{averageScore}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <label for="subject">科目：</label>
+      <input type="text" id="subject" name="subject" placeholder="请输入科目" v-model="newSubject">
+      <label for="score">分数：</label>
+      <input type="text" id="score" name="score" placeholder="请输入分数" v-model="newScore">
+      <button type="submit" @click="add">添加</button>
+
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        scoreList: [{ id: 1, subject: "语文", score: 46 }
+          , { id: 2, subject: "英语", score: 80 }
+          , { id: 3, subject: "数学", score: 100 }
+        ],
+        newSubject: "",
+        newScore: ""
+      },
+      methods: {
+        add() {
+          let newId = this.scoreList.length + 1
+          this.scoreList.push({ id: newId, subject: this.newSubject, score: parseFloat(this.newScore) })
+          console.log(this.scoreList)
+          this.newScore = ""
+          this.newSubject = ""
+        },
+        del(id) {
+          this.scoreList = this.scoreList.filter((item) => item.id != id)
+        }
+      },
+      computed: {
+        sumScore() {
+          return this.scoreList.reduce((sum, item) => item.score + sum, 0)
+        },
+        averageScore() {
+          return (this.sumScore / this.scoreList.length).toFixed(3)
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
