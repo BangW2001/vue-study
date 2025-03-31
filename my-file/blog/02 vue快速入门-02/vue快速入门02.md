@@ -34,11 +34,11 @@
 
 
 
-## v-bind对于样式控制的增强
+### v-bind对于样式控制的增强
 
 为便于开发者进行样式控制，Vue扩展了`v-bind`语法，可以针对`class类名`和`style行内样式`进行控制
 
-### v-bind操作class
+#### v-bind操作class
 
 语法：`:class="对象/数组"`
 
@@ -170,7 +170,7 @@
 
 
 
-### v-bind操作style
+#### v-bind操作style
 
 语法：`:style="样式对象"`
 
@@ -242,6 +242,8 @@
 
 ## computed属性
 
+### 计算属性介绍
+
 计算属性：基于现有的数据，计算出来的新属性，依赖的数据发生变化，会自动重新计算
 
 语法：
@@ -291,21 +293,244 @@ computed:{
 </body>
 ```
 
+### computed计算属性 vs methods方法
 
+#### computed计算属性
 
+功能：封装了一段对于数据的处理，求得一个结果
 
+语法：
 
+- 写在`computed`配置项中
+- 作为属性，直接使用`this.计算属性`或者`{{计算属性}}`
 
+缓存特性：
 
+- 能够一定程度上提升性能，计算属性会对计算出来的结果进行缓存，再次使用时直接读取缓存，如果依赖项发生了变化，会自动计算新的结果并再次缓存
 
+#### methods方法
+
+功能：封装了处理业务逻辑，给实例提供一个方法
+
+语法：
+
+- 写在`methods`配置项中
+- 作为方法，需要调用`this.方法名()`或者`@事件名=方法名`
+
+### 计算属性完整写法
+
+上述是计算属性的简写，这种情况下只能访问，不能修改属性，如果要修改属性，则需要写计算属性的完整写法
+
+**计算属性的完整写法**
+
+```html
+computed:{
+	计算属性名:{
+		get(){
+			代码逻辑（数据计算逻辑）
+			return 结果
+		},
+		set(){
+			代码逻辑（数据修改逻辑）
+		}
+	}
+}
+```
+
+**实例**
+
+```html
+<body>
+  <div id="app">
+    <div class="box">
+      <label>姓:</label><input type="text" v-model="firstName" />
+      <label>名:</label><input type="text" v-model=lastName />
+      <span>={{name}}</span>
+    </div>
+    <input type="text" placeholder="输入新的名字" v-model="inputName" />
+    <button @click="alertName">改名</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        firstName: "李",
+        lastName: "白",
+        inputName: ""
+      },
+      methods: {
+        alertName() {
+          this.name = this.inputName
+        }
+      },
+      computed: {
+        name: {
+          get() {
+            return this.firstName + this.lastName
+          },
+          //修改赋值时，value极为传入的新赋予的值
+          set(value) {
+            this.firstName = value.substring(0, 1)
+            this.lastName = value.substring(1, value.length)
+          }
+        }
+      }
+    })
+  </script>
+</body>
+```
 
 ## watch监听器
 
+### 概述
 
+功能：监视一些数据变化，执行相应的业务逻辑或者异步操作
 
+应用场景分析：在线翻译栏，左边用户输入内容，右边会实时显示翻译内容
 
+语法：
 
+- 简单写法：监听简单类型数据
 
+- 完整写法：需要添加额外的配置
+
+### 简单写法
+
+**语法**
+
+```html
+<!--示例-->
+data:{
+	words:"苹果",
+	obj:{
+		words:"苹果"
+	}
+}
+<!--监视器-->
+watch:{
+	//数据变化时会触发对应的操作
+	//newValue为新值，oldValue为老值
+	数据属性名(newValue,oldValue){
+		对应数据变化的业务逻辑或者异步操作
+	},
+	'对象.属性名'(newValue,oldValue){
+		对应数据变化的业务逻辑或者一部操作
+	}
+}
+```
+
+**实例**
+
+```html
+<body>
+  <div id="app">
+    <div>
+      <label>输入内容</label><br />
+      <textarea v-model="words"></textarea>
+    </div>
+    <div>
+      <label>翻译内容</label><br />
+      <textarea v-model="translateWords"></textarea>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        words: "",
+        translateWords: ""
+      },
+      watch: {
+        words(newValue, oldValue) {
+          this.translateWords = newValue.toUpperCase()
+        }
+      }
+
+    })
+  </script>
+</body>
+```
+
+如何是调用后端API接口进行相关的操作，这时候要注意性能的影响，采取**防抖**，来避免频繁触发调用
+
+### 完整写法
+
+完整写法需要额外配置项
+
+- deep:true，对复杂数据类型深度监视 ，
+- immediate:true，初始化立刻执行一次handler方法
+
+应用场景分析：仍然是文本翻译场景，但是，不仅用户输入内容，实时显示当前文本翻译结果，当用户切换语言类型时，也需要翻译当前文本内容，这时就需要同时监听一个对象的多个属性
+
+**语法**
+
+```html
+data:{
+	obj:{
+		words:"苹果",
+		lang:"En"
+	}
+},
+watch:{
+	数据属性名:{
+		deep:true,
+		handler(newValue){
+
+		}
+	}
+}
+```
+
+**实例**
+
+```html
+<body>
+  <div id="app">
+    <div>
+      <select v-model="transObj.lang">
+        <option value="大写">大写</option>
+        <option value="小写">小写</option>
+      </select>
+    </div>
+    <div>
+      <label>输入内容</label><br />
+      <textarea v-model="transObj.words"></textarea>
+    </div>
+    <div>
+      <label>翻译内容</label><br />
+      <textarea v-model="translateWords"></textarea>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        transObj: {
+          words: "",
+          lang: ""
+        },
+        translateWords: ""
+      },
+      watch: {
+        transObj: {
+          deep: true,
+          handler(newValue) {
+            if (newValue.lang == "大写") {
+              this.translateWords = newValue.words.toUpperCase()
+            } else if (newValue.lang == "小写") {
+              this.translateWords = newValue.words.toLowerCase()
+            }
+          }
+        }
+      }
+
+    })
+  </script>
+</body>
+```
 
 ## 综合案例：购物车
 
