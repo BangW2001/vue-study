@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航栏示例</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .navbar-item.active {
+            background-color: #e2231a;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="navbar">
+            <div class="navbar-item" v-for="item in tabList" :class="{active:item.isActive}"
+            @click="add(item.id)">{{item.name}}</div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script><script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el:"#app",
+            data:{
+                tabList:[{"id":1,"name":"京东秒杀","isActive":false}
+                    ,{"id":2,"name":"每日特价","isActive":false}
+                    ,{"id":3,"name":"品类秒杀","isActive":false}
+                ]
+            },
+            methods:{
+                add(id){
+                    this.tabList.forEach(item => {
+                        item.isActive = item.id==id
+                    });
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>

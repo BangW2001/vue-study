@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #app {
+      display: flex;
+      margin: 10px auto;
+      width: 800px;
+      height: 600px;
+      text-align: center;
+    }
+
+    textarea {
+      width: 300px;
+      height: 200px;
+      margin: 10px 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div>
+      <select v-model="transObj.lang">
+        <option value="大写">大写</option>
+        <option value="小写">小写</option>
+      </select>
+    </div>
+    <div>
+      <label>输入内容</label><br />
+      <textarea v-model="transObj.words"></textarea>
+    </div>
+    <div>
+      <label>翻译内容</label><br />
+      <textarea v-model="translateWords"></textarea>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        transObj: {
+          words: "",
+          lang: ""
+        },
+        translateWords: ""
+      },
+      watch: {
+        transObj: {
+          deep: true,
+          handler(newValue) {
+            if (newValue.lang == "大写") {
+              this.translateWords = newValue.words.toUpperCase()
+            } else if (newValue.lang == "小写") {
+              this.translateWords = newValue.words.toLowerCase()
+            }
+          }
+        }
+      }
+
+    })
+  </script>
+</body>
+
+</html>

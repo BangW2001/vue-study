@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    input {
+      width: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="box">
+      <label>姓:</label><input type="text" v-model="firstName" />
+      <label>名:</label><input type="text" v-model=lastName />
+      <span>={{name}}</span>
+    </div>
+    <input type="text" placeholder="输入新的名字" v-model="inputName" />
+    <button @click="alertName">改名</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        firstName: "李",
+        lastName: "白",
+        inputName: ""
+      },
+      methods: {
+        alertName() {
+          this.name = this.inputName
+        }
+      },
+      computed: {
+        name: {
+          get() {
+            return this.firstName + this.lastName
+          },
+          //修改赋值时，value极为传入的新赋予的值
+          set(value) {
+            this.firstName = value.substring(0, 1)
+            this.lastName = value.substring(1, value.length)
+          }
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
