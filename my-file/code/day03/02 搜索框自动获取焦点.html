@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>搜索页面</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    .search-container {
+      text-align: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-text {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .search-bar input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    .search-button {
+      padding: 10px 20px;
+      background-color: #c43c3c;
+      color: white;
+      border: none;
+      cursor: pointer;
+      outline: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="search-container">
+      <div class="logo">
+        <div class="logo-text">搜索一下</div>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="搜索内容...">
+        <button class="search-button">搜索一下</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+
+      },
+      mounted() {
+        //输入框获取焦点
+        document.querySelector(".search-bar input").focus()
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>计数器</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    .counter {
+      text-align: center;
+    }
+
+    .counter h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .button {
+      width: 50px;
+      height: 50px;
+      margin: 0 10px;
+      font-size: 1.5em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .value {
+      font-size: 2em;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="counter">
+      <h1>{{title}}</h1>
+      <div class="buttons">
+        <button class="button" @click="number--">-</button>
+        <div class="value" id="value">{{number}}</div>
+        <button class="button" @click="number++">+</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        title: "计数器",
+        number: 100
+      },
+      //1.创建阶段，完成初始化，准备数据
+      beforeCreate() {
+        console.log("响应式数据准备之前")
+      },
+      created() {
+        console.log("响应式数据准备之后")
+        //在这个钩子函数里可以执行渲染数据请求
+        this.number = 200
+      },
+      //2.挂载阶段（渲染模板）
+      beforeMount() {
+        console.log("模板渲染之前", document.querySelector("h1").innerHTML)
+      },
+      mounted() {
+        console.log("模板渲染之后", document.querySelector("h1").innerHTML)
+        //这个阶段之后，就可以操作dom
+      },
+      //3.更新阶段，改变数据，更新视图
+      beforeUpdate() {
+        //更新之前的视图
+        console.log("数据修改了，但视图并未更新", document.querySelector(".value").innerHTML)
+      },
+      updated() {
+        //更新之后的视图
+        console.log("数据修改了，视图已经更新", document.querySelector(".value").innerHTML)
+      },
+      //4.销毁阶段
+      //执行 实例名.$destroy()，可以手动销毁实例
+      beforeDestroy() {
+        console.log("beforeDestroy")
+        //该阶段一般用于销毁实例之前关闭一些第三方的资源占用
+      },
+      destoyed() {
+        console.log("destroyed")
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>消费记录</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    .header button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid #ccc;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    .total {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .delete {
+      color: #007bff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="container">
+      <div class="header">
+        <input type="text" placeholder="消费名称" v-model.trim="consumerName">
+        <input type="text" placeholder="消费价格" v-model.number="consumerPrice">
+        <button @click="add">添加账单</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>编号</th>
+            <th>消费名称</th>
+            <th>消费价格</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item,index) in goods" :key="item.id">
+            <td>{{index+1}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.price.toFixed(2)}}</td>
+            <td class="delete" @click="del(item.id)">删除</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="total">消费总计：{{totalPrice.toFixed(2)}}</div>
+    </div>
+
+    <div id="main" style="width: 600px;height:400px;"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.2.2/echarts.min.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        goods: [],
+        consumerName: "",
+        consumerPrice: "",
+        legendNames: [],
+        picData: []
+      },
+      computed: {
+        totalPrice() {
+          return this.goods.reduce((sum, item) => sum + item.price, 0)
+        }
+      },
+      methods: {
+        del(id) {
+          this.goods = this.goods.filter((item) => item.id != id)
+        },
+        add() {
+          this.goods.push({
+            id: Date.now(),
+            name: this.consumerName,
+            price: this.consumerPrice,
+            creator: "小黑"
+          })
+        },
+        showPic() {
+          var myChart = echarts.init(document.getElementById('main'));
+
+          // 指定图表的配置项和数据
+          var option = {
+            title: {
+              text: '消费账单列表',
+              left: 'center'
+            },
+            tooltip: {
+              trigger: 'item'
+            },
+            legend: {
+              orient: 'vertical',
+              left: 'left',
+              data: this.legendNames
+            },
+            series: [
+              {
+                name: '访问来源',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: this.picData,
+                emphasis: {
+                  itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+                }
+              }
+            ]
+          };
+
+          // 使用刚指定的配置项和数据显示图表。
+          myChart.setOption(option);
+        }
+      }
+      ,
+      async created() {
+        const resp = await axios({
+          url: 'https://applet-base-api-t.itheima.net/bill',
+          params: {
+            creator: "小黑"
+          }
+        })
+        this.goods = resp.data.data
+
+        this.legendNames = this.goods.map(item => item.name)
+
+        this.picData = this.goods.map(item => ({ value: item.price, name: item.name }))
+        this.showPic()
+      },
+
+    })
+  </script>
+</body>
+
+</html>
