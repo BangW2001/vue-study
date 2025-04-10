@@ -7,7 +7,11 @@ import Vue from 'vue'
 //导入Vue根组件
 import App from './App.vue'
 
+import PageButton from './components/PageButton.vue'
+
 Vue.config.productionTip = false
+
+Vue.component("PageButton", PageButton)
 
 //实例化Vue对象
 new Vue({

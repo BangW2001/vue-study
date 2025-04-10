@@ -1,31 +1,32 @@
 <template>
-  <!--组件的结构代码-->
-  <div class="father">
-    <div class="son" @click="show">大的</div>
+  <div class="app">
+    <MyHeader></MyHeader>
+    <MyMain></MyMain>
+    <MyFooter></MyFooter>
   </div>
 </template>
 
 <script>
-//导出当前组件的配置项
-//里面可以提供data、methods、computed、watch、生命周期钩子函数等
-  export default{
-    methods:{
-      show(){
-        alert("你点击了son div元素")
-      }
-    }
+import PageHeader from './components/PageHeader.vue';
+import PageMain from './components/PageMain.vue';
+import PageFooter from './components/PageFooter.vue';
+
+export default {
+  components:{
+    MyHeader:PageHeader,
+    MyMain:PageMain,
+    MyFooter:PageFooter
   }
+}
 </script>
 
 <style>
-  .father{
-    width: 300px;
-    height: 300px;
-    background-color: blue;
-  }
-  .son{
-    width: 100px;
-    height: 100px;
-    background-color: red;
+  .app{
+    margin: 10px auto;
+    padding: 50px;
+    width: 600px;
+    height: 500px;
+    background-color: aqua;
+    text-align: center;
   }
 </style>

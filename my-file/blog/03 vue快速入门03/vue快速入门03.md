@@ -280,20 +280,188 @@ Vue生命周期的四个阶段：
 
 ![image-20250404230839527](vue快速入门03/image-20250404230839527.png)
 
+### 普通组件的注册使用
+
+####  组件注册的两种方式
+
+##### 局部注册
+
+只能在注册的组件内使用
+
+1. 创建`.vue`文件
+2. 在使用的组件内导入并注册
+
+```vue
+<!--导入-->
+import 组件名 from 'xxx.vue'
+<!--注册-->
+export default{
+	components:{
+		组件名称
+:导入的组件名
+	}
+}
+```
 
 
 
+使用的时候，直接当成`html`标签使用，`<组件名></组件名>`
 
+注意组件名的命名规范：大驼峰命名法，比如`XxxHhhh`
 
+**使用实例**
 
+<img src="vue快速入门03/image-20250410213516845.png" alt="image-20250410213516845" style="zoom:67%;" />
 
+将上图中的页面拆分为三个不同的组件：`PageHeader`、`PageMain`、`PageFooter`
 
+![image-20250410213623378](vue快速入门03/image-20250410213623378.png)
 
+`PageHeader`代码
 
+```vue
+<!--页面头部组件-->
+<template>
+  <div class="header">头部</div>
+</template>
 
+<script>
+export default {
 
+}
+</script>
 
+<style>
+  .header{
+    height: 100px;
+    background-color: blueviolet;
+    text-align: center;
+    line-height: 100px;
+    font-size: 30px;
+    color: white;
+    font-weight: 700;
+  }
+</style>
+```
 
+`PageMain`代码
 
+```vue
+<!--页面头部组件-->
+<template>
+  <div class="main">页面主体</div>
+</template>
 
-## 综合案例--小兔鲜首页
+<script>
+export default {
+
+}
+</script>
+
+<style>
+  .main{
+    margin: 20px 0;
+    height: 300px;
+    background-color: blue;
+    text-align: center;
+    line-height: 300px;
+    font-size: 30px;
+    color: white;
+    font-weight: 700;
+  }
+</style>
+```
+
+`PageFooter`代码
+
+```vue
+<!--页面头部组件-->
+<template>
+  <div class="footer">页面底部</div>
+</template>
+
+<script>
+export default {
+
+}
+</script>
+
+<style>
+  .footer{
+    height: 100px;
+    background-color: greenyellow;
+    text-align: center;
+    line-height: 100px;
+    font-size: 30px;
+    color: white;
+    font-weight: 700;
+  }
+</style>
+```
+
+`App.vue`代码
+
+```vue
+<template>
+  <div class="app">
+    <MyHeader></MyHeader>
+    <MyMain></MyMain>
+    <MyFooter></MyFooter>
+  </div>
+</template>
+
+<script>
+import PageHeader from './components/PageHeader.vue';
+import PageMain from './components/PageMain.vue';
+import PageFooter from './components/PageFooter.vue';
+
+export default {
+  components:{
+    MyHeader:PageHeader,
+    MyMain:PageMain,
+    MyFooter:PageFooter
+  }
+}
+</script>
+
+<style>
+  .app{
+    margin: 10px auto;
+    padding: 50px;
+    width: 600px;
+    height: 500px;
+    background-color: aqua;
+    text-align: center;
+  }
+</style>
+```
+
+##### 全局注册
+
+在所有组件内都能使用
+
+1.  创建`.vue`文件
+2. 在`main.js`中进行全局注册
+
+在各个组件中均使用的通用组件，就可以把它定义为全局组件
+
+全局注册的语法
+
+```js
+//导入需要注册的组件
+import 组件名 from "xxxx.vue"
+
+//调用Vue.component进行全局注册
+//Vue.component('组件名',组件对象)
+```
+
+全局注册之后，任意其他组件中均可直接使用（不用在使用的组件内导入注册该组件），使用的时候，直接当成`html`标签使用，`<组件名></组件名>`
+
+## 总结
+
+项目页面开发的思路
+
+1. 分析页面，按照模块对页面进行拆分，搭架子（一般局部注册，在多个组件中均使用的组件，可以考虑进行全局注册）
+2. 根据设计图，编写组件`html`结构和`css`样式
+3. 拆分封装通用的小组件
+4. 实现完静态结构后，通过`js`动态渲染，实现页面的相关功能
