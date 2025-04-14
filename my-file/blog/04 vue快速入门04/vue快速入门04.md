@@ -133,14 +133,79 @@ export default {
 
 ##### 父子通信
 
-###### 父组件通过`props`将数据传递给子组件
+**父组件通过`props`将数据传递给子组件**
 
 1. 在父组件中给子组件以添加属性的方式传递值
 2. 在子组件中通过`props`接收数据
 
+**子组件利用`$emit`通知父组件修改更新**
 
+1. 子组件`$emit`发送消息·
+2. 父组件中给子组件添加消息监听
+3. 父组件中实现相应的处理函数
 
-###### 子组件利用`$emit`通知父组件修改更新
+**实例**
+
+`父组件代码`
+
+```vue
+<template>
+  <div>
+    <div>父组件</div>
+     //父组件对消息监听
+    <SonPage :message="message" @changeMsg="changeFunc"></SonPage>
+  </div>
+</template>
+
+<script>
+import SonPage from './components/SonPage.vue';
+export default {
+  components:{
+    SonPage:SonPage
+  },methods:{
+    changeFunc(text){
+      this.message=text
+    }
+  },
+  data(){
+    return {
+      message:"该数据来源于父组件"
+    }
+  }
+}
+</script>
+
+<style>
+
+</style>
+```
+
+`子组件代码`
+
+```vue
+<template>
+  <div>
+    <div>子组件接收的数据:{{ message }}</div>
+    <button @click="handleChange">改变接收数据内容</button>
+  </div>
+</template>
+
+<script>
+export default {
+  props:["message"],
+  methods:{
+    handleChange(){
+      //$emit出发事件，会给父组件发送对应的消息通知
+      this.$emit("changeMsg","子组件改变后的内容")
+    }
+  }
+}
+</script>
+
+<style>
+
+</style>
+```
 
 
 
