@@ -412,11 +412,160 @@ mehods:{
 
 
 
-### .sync修饰符
+### .sync修饰符(了解)
 
 作用：可以实现父子组件数据的双向绑定，简化代码
 
 背景：v-model简化的前提是数据传递时`props`接收用`value`命名，但是并非所有组件用`value`都合适，而用`.sync`可以自定义`props`属性名
+
+
+
+### ref和$refs
+
+作用：利用`ref`和`$refs`可以用于获取`dom`元素或组件实例
+
+**背景**：
+
+- 利用`document.queryselector()`查找时是整个页面查找
+- 利用`ref`和`$refs` 是在当前组件内查找，会更加精准准确
+
+**语法**：
+
+#### 获取`dom`元素
+
+1. 目标标签添加`ref`属性，并将属性值设置为`xxx`
+2. 在恰当时机(挂载之后，才可访问`dom`元素)，通过`this.$refs.xxx`获取目标标签
+
+**示例代码**
+
+```vue
+<div ref="chartRef">渲染图标容器</div>
+```
+
+```vue
+mounted(){
+	console.log(this.$refs.chartRef)
+}
+```
+
+#### 获取组件实例
+
+1. 给目标组件添加`ref`属性，设置属性值为`xxx`
+2. 在恰当时机，通过`$refs.xxx`获取目标组件，然后可以调用组件对象里面的方法
+
+**示例代码**
+
+```vue
+<BaseCom ref="baseCom"></BaseCom>
+```
+
+```vue
+this.$refs.baseCom.组件方法()
+```
+
+
+
+### Vue异步更新与`$nextTick`
+
+异步更新：`Vue`是异步更新`DOM`，以提升性能
+
+`$nextTick`：等`DOM`更新后，才会触发执行此方法里的函数体
+
+语法：`this.$nextTick(函数体)`
+
+**示例**
+
+比如点击一个按钮，然后会显示一个输入框，然后让这个输入框自动获取焦点
+
+```vue
+<template>
+  <div>
+    <div v-if="isShow">
+      <input type="text" ref="inp" />
+      <button>确认</button>
+    </div>
+    <div v-else>
+      <button @click="show">编辑</button>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      isShow: false,
+    };
+  },
+  methods: {
+    show() {
+      this.isShow = true;
+      this.$refs.inp.focus();
+    },
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
+上面这种写法是会报错的，因为`vue`是`dom`异步更新，不能立刻获取对应元素
+
+![image-20250415153911039](vue快速入门04/image-20250415153911039.png)
+
+应当借助`$nextTick`来实现该功能，等`dom`更新完，再执行对应的功能
+
+```vue
+<template>
+  <div>
+    <div v-if="isShow">
+      <input type="text" ref="inp" />
+      <button>确认</button>
+    </div>
+    <div v-else>
+      <button @click="show">编辑</button>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      isShow: false,
+    };
+  },
+  methods: {
+    show() {
+      this.isShow = true;
+      this.$nextTick(() => {
+        this.$refs.inp.focus();
+      });
+    },
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

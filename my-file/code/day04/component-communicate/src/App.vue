@@ -1,32 +1,32 @@
 <template>
   <div>
-    <SonPage :name="name"
-    :age="age"
-    :car="car"
-    :hobby="hobby"></SonPage>
+    <div v-if="isShow">
+      <input type="text" ref="inp" />
+      <button>确认</button>
+    </div>
+    <div v-else>
+      <button @click="show">编辑</button>
+    </div>
   </div>
 </template>
 
 <script>
-import SonPage from './components/SonPage.vue';
 export default {
-  components:{
-    SonPage:SonPage
-  },
-  data(){
+  data() {
     return {
-      name:"张三",
-      age:27,
-      car:{
-        brand:"宝马",
-        price:"35w"
-      },
-      hobby:["篮球","足球","排球"]
-    }
-  }
-}
+      isShow: false,
+    };
+  },
+  methods: {
+    show() {
+      this.isShow = true;
+      this.$nextTick(() => {
+        this.$refs.inp.focus();
+      });
+    },
+  },
+};
 </script>
 
 <style>
-
 </style>
