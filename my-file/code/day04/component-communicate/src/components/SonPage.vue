@@ -1,19 +1,16 @@
 <template>
   <div>
-    <div>子组件接收的数据:{{ message }}</div>
-    <button @click="handleChange">改变接收数据内容</button>
+    <h1>个人信息</h1>
+    <p>姓名:{{ name }}</p>
+    <p>年龄:{{ age }}</p>
+    <p>汽车:{{ car.brand }},价格:{{ car.price }}</p>
+    <p v-for="item,index in hobby" :key="index">兴趣:{{ item }}</p>
   </div>
 </template>
 
 <script>
 export default {
-  props:["message"],
-  methods:{
-    handleChange(){
-      //$emit出发事件，会给父组件发送对应的消息通知
-      this.$emit("changeMsg","子组件改变后的内容")
-    }
-  }
+  props:["name","age","car","hobby"]
 }
 </script>
 

@@ -1,7 +1,9 @@
 <template>
   <div>
-    <div>父组件</div>
-    <SonPage :message="message" @changeMsg="changeFunc"></SonPage>
+    <SonPage :name="name"
+    :age="age"
+    :car="car"
+    :hobby="hobby"></SonPage>
   </div>
 </template>
 
@@ -10,14 +12,16 @@ import SonPage from './components/SonPage.vue';
 export default {
   components:{
     SonPage:SonPage
-  },methods:{
-    changeFunc(text){
-      this.message=text
-    }
   },
   data(){
     return {
-      message:"该数据来源于父组件"
+      name:"张三",
+      age:27,
+      car:{
+        brand:"宝马",
+        price:"35w"
+      },
+      hobby:["篮球","足球","排球"]
     }
   }
 }
