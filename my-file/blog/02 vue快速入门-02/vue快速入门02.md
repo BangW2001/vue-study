@@ -533,5 +533,247 @@ watch:{
 ```
 ## 综合案例：购物车
 
+实现下图中的购物车功能
+
+<img src="C:\Users\19854\AppData\Roaming\Typora\typora-user-images\image-20250403164138551.png" alt="image-20250403164138551" style="zoom:50%;" />
+
+功能分析：
+
+- 页面列表渲染：`v-for`
+- 删除功能
+- 修改个数
+- 全选反选
+- 统计选中商品的数目和总价：`computed`属性
+- 持久化到本地：`localStorage`
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>购物车</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    .header {
+      background-color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header img {
+      width: 100px;
+      border-radius: 50%;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .cart {
+      background-color: #fff;
+      margin: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .total {
+      text-align: right;
+      margin-top: 20px;
+    }
+
+    .total span {
+      font-size: 24px;
+      color: red;
+    }
+
+    .button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+
+    .delete {
+      background-color: #dc3545;
+    }
+
+    .delete:hover {
+      background-color: #c82333;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-around;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <div class="header">
+      <img src="https://via.placeholder.com/100" alt="Logo">
+      <h1>水果</h1>
+    </div>
+
+    <div class="cart">
+      <h2>购物车</h2>
+      <table>
+        <thead>
+          <tr v-if="goods.length>0">
+            <th>选中</th>
+            <th>图片</th>
+            <th>单价</th>
+            <th>个数</th>
+            <th>小计</th>
+            <th>操作</th>
+          </tr>
+          <tr v-else>
+            <th>没有商品，购物车为空</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in goods" :key="item.id">
+            <td><input type="checkbox" v-model="item.checked"></td>
+            <td><img src="https://via.placeholder.com/50" :alt="item.name"></td>
+            <td>{{item.price}}</td>
+            <td>
+              <button :disabled="item.num<0" @click="item.num=1">-</button>
+              <span>{{item.num}}</span>
+              <button @click="item.num+=1">+</button>
+            </td>
+            <td>{{item.price*item.num}}</td>
+            <td><button class="delete" @click="del(item.id)">删除</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="total">
+        总价：<span>¥{{totalPrice}}</span>
+      </div>
+      <div class="footer">
+        <div><label>全选:</label><input type="checkbox" id="selectAll" v-model="isAll" /></div>
+        <button class="button">结算{{totalNum}}</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const defaultArr = []
+    const app = new Vue({
+      el: "#app",
+      data: {
+        // goods: [{ id: 1, name: "火龙果", price: 6, num: 2, checked: false },
+        // { id: 2, name: "草莓", price: 7, num: 1, checked: false }
+        // ]
+        //从本地存储读取，如果为空，则用默认值
+        goods: JSON.parse(localStorage.getItem("goods")) || defaultArr
+      }, computed: {
+        totalPrice() {
+          return this.goods.reduce((sum, item) => {
+            if (item.checked) {
+              return sum + item.price * item.num
+            } else {
+              return sum
+            }
+          }, 0)
+        }, totalNum() {
+          return this.goods.reduce((sum, item) => {
+            if (item.checked) {
+              return sum + item.num
+            } else {
+              return sum
+            }
+          }, 0)
+        },
+        isAll: {
+          get() {
+            for (let index = 0; index < this.goods.length; index++) {
+              if (!this.goods[index].checked) {
+                return false
+              }
+            }
+            if (this.goods.length == 0) return false
+            return true
+          }, set(value) {
+            this.goods.forEach(item => {
+              item.checked = value
+            })
+          }
+        }
+      },
+      methods: {
+        del(id) {
+          this.goods = this.goods.filter(item => item.id != id)
+        }
+      },
+      //数据持久化，localstorage
+      watch: {
+        goods: {
+          deep: true,
+          handler(newValue) {
+            localStorage.setItem("goods", JSON.stringify(newValue))
+          }
+        }
+      }
+    })
+  </script>
+
+</body>
+
+</html>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
