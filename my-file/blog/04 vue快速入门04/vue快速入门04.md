@@ -118,7 +118,7 @@ export default {
 - 组件的数据是独立的，无法直接访问其他组件的数据
 - 如果想要使用其他组件的数据，组需要利用组件通信机制
 
-#### 组件关系及其对应通信方案
+### 组件关系及其对应通信方案
 
 不同组件关系，其组件通信方案也不一样
 
@@ -131,7 +131,7 @@ export default {
 
 通用的解决方案`Vuex`，适用于复杂的业务场景
 
-##### 父子通信
+#### 父子通信
 
 **父组件通过`props`将数据传递给子组件**
 
@@ -209,27 +209,214 @@ export default {
 
 
 
+#### Prop
+
+`Prop`定义：组件上注册的一些自定义属性
+
+`Prop`作用：向子组件传递数据
+
+特点：
+
+- 可以传递任意数量的prop
+- 可以传递任意类型的prop
+
+##### Prop校验
+
+为保证组件的`Prop`不乱传，可以为组件的`Prop`指定验证要求，不符合要求，控制台就会有错误提示
+
+常见的校验：
+
+- 类型校验
+
+```vue
+props:{
+	校验的属性名:类型//Number String Boolean ...
+}
+```
+
+- 非空校验
+- 默认值
+- 自定义校验
+
+如果需要满足多个校验的要求，完整的写法如下：
+
+```vue
+props:{
+	校验的属性名:{
+		type:类型, //Number String Boolean  类型校验
+		required: true,//是否是必须的，非空校验
+		default:默认值,//默认值
+		validator(value){
+			//自定义校验逻辑
+			return 是否通过校验 //true通过校验,false没通过校验
+		}
+	}
+}
+```
 
 
 
+##### Prop vs data
+
+共同点：都可以给组件提供数据
+
+区别：
+
+- data数据是自己的，可以随便改
+- prop数据是外部父组件提供的，不能直接更改，遵循单向数据流
 
 
 
+#### 非父子组件通信
 
+##### 方式一：event bus事件总线
 
+作用：非父子组件之间，进行简易消息传递，复杂场景简易使用`Vuex`
 
+使用语法：
 
+1. 创建一个都能访问到的事件总线（空Vue实例）
 
+   ```vue
+   import Vue from 'vue'
+   const Bus = new Vue()
+   export default Bus
+   ```
 
-## 综合案例
+2. A组件（接收方），监听Bus实例的事件
+
+   ```vue
+   created(){ //监听事件，出触发对应动作
+   	Bus.$on('sendMsg',(msg)=>{
+   		this.msg = msg
+   	})
+   }
+   ```
+
+3. B组件（发送方），触发Bus实例的事件
+
+   ```vue
+   Bus.$emit("sendMsg","传递的消息内容")
+   ```
+
+   
+
+##### 方式二：provide & inject
+
+`provide & inject`作用：跨层级（爷爷辈组件提供的数据，子孙辈均可直接使用）共享数据
+
+1. 父组件provide提供数据
+
+```vue
+export default{
+    provide(){
+        //不同数据类型的数据
+        //注意简单数据类型是非响应式的数据，复杂类型是响应式的，所以如果使用这种方式，建议将所有数据封装成对象进行传递
+        数据名1:数据值1,
+        xxx:xxxx
+    }
+}
+```
+
+1. 子/孙组件inject取值使用
+
+```vue
+export default{
+	inject: ['对应的数据名1','对应的数据名2']
+}
+```
 
 
 
 ## 进阶语法
 
+### v-model原理
+
+原理：`v-model`本质是一个语法糖，例如应用在`input`输入框，其就相当于`value`属性和`input`事件的合写
+
+作用：提供数据的双向绑定
+
+- 数据变，视图会跟着变：`value`
+- 视图变，数据会跟着变：`@input`
+
+```vue
+<input v-model="msg" type="text">
+等价于
+<input :value="msg" @input="msg = $event.target.value" type="text"> //$event用于模板中，获取事件的形参
+```
 
 
 
+### 表单组件封装 & v-model简化代码
+
+#### 表单组件封装
+
+- 父传子：数据应该是父组件`Props`传递过来的，`v-model`拆解绑定数据
+- 子传父：监听输入，子传父，传值给父组件修改
+
+**子组件BaseSelect封装的代码示例**
+
+```vue
+<select :value="cityId" @change="handleChange">
+    ...
+</select>
+
+props:{
+	cityId: String
+}
+
+methods:{
+	handleChange(e){
+		this.$emit("事件名",e.target.value)
+	}
+}
+```
+
+**父组件代码示例**
+
+```vue
+<BaseSelect :cityId="selectId" @事件名="selectId= $event"></BaseSelect>
+```
+
+
+
+#### 父组件v-model简化代码，实现父子组件数据的双向绑定
+
+在子组件中将数据更改的事件命名为`input`，传递的数据名改为`value`，这样父组件代码就可以简写
+
+**子组件封装代码示例**
+
+```vue
+<select :value="value" @change="handleChange">
+    ...
+</select>
+
+props:{
+	value:String
+}
+
+mehods:{
+	handleChange(e):{
+		this.$emit("input",e.target.value)
+	}
+}
+```
+
+**父组件代码**
+
+```vue
+<BaseSelect :value="selectId" @input="selectId=$event"></BaseSelect>
+可以简化为
+<BaseSelect v-model="selectId"></BaseSelect>
+```
+
+
+
+### .sync修饰符
+
+作用：可以实现父子组件数据的双向绑定，简化代码
+
+背景：v-model简化的前提是数据传递时`props`接收用`value`命名，但是并非所有组件用`value`都合适，而用`.sync`可以自定义`props`属性名
 
 
 
