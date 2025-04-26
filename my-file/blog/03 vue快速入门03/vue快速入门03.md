@@ -297,13 +297,10 @@ import 组件名 from 'xxx.vue'
 <!--注册-->
 export default{
 	components:{
-		组件名称
-:导入的组件名
+		组件名称:导入的组件名
 	}
 }
 ```
-
-
 
 使用的时候，直接当成`html`标签使用，`<组件名></组件名>`
 
