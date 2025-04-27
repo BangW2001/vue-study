@@ -524,8 +524,264 @@ export default {
 </style>
 ```
 
+## 路由
+
+### 单页应用程序
+
+单页应用程序`SPA（Single Page Application）`，所有的功能都在一个`html`页面上实现
+
+**单页面应用 vs 多页面应用**
+
+ ![image-20250427092819298](./vue05/image-20250427092819298.png) 
+
+- 单网页应用适用场景
+  - 系统类网站/内部网站/文档类网站/移动端站点
+- 多网页应用适用场景
+  - 公司官网/电商类网站（这两类网站需要首屏加载快）
+
+单页应用程序之所以开发效率高、性能高、用户体验好，最大的原因在于：**页面按需更新**
+
+对于按需更新，首先需要明确：**访问路径** 和**组件**的对应关系
+
+### 路由
+
+路由本质是一种映射关系
+
+`Vue`中的路由：路径和组件之间的映射关系
+
+ 
+
+### VueRouter
+
+#### 介绍
+
+`VueRouter`是`Vue`官方的一个路由插件，是一个第三方包，当修改地址栏路径时，会切换显示匹配的组件
+
+官网：[VueRouter](https://v3.router.vuejs.org/zh/)
+
+#### VueRouter的使用
+
+使用步骤：
+
+以下五部代码在`main.js`中编写
+
+**①下载**
+
+下载`VueRouter`模块到当前工程，注意`vue2`对应的版本是`3.x`，本实例中我们安装版本`3.6.5`
+
+```shell
+npm i vue-router@3.6.5
+```
+
+**②引入**
+
+```vue
+import VueRouter from 'vue-router'
+```
+
+**③安装注册**
+
+```vue
+Vue.use(VueRouter)
+```
+
+**④创建路由对象**
+
+```vue
+const router = new VueRouter() //参数为相应的路由规则
+
+//配置路由规则,组件一般建议放在views目录下
+const router = new VueRouter({
+	routes:[
+		{path:路径名称,componet:组件名称},
+		...
+	]
+})
+```
+
+**⑤注入**
+
+将路由对象注入到`vue`实例，建立关联
+
+```vue
+new Vue({
+	render:h=>h(App),
+	router
+}).$mount('#app')
+```
+
+完成上面五步之后，在页面地址栏就会出现`xxxx/#/`
+
+**⑥配置导航以及路由出口**
+
+路由出口即路径匹配的组件显示的位置，`vue`提供标签`<router-view></router-view>`，路由匹配到的组件最终将渲染到这个标签所在的位置
+
+#### 实例
+
+`main.js`
+
+```vue
+import Vue from 'vue'
+import App from './App.vue'
+//1.导包
+import VueRouter
+ from 'vue-router'
+Vue.config.productionTip = false
+
+//2.注册
+Vue.use(VueRouter)
+
+//3.创建路由对象
+import FindMusic from './views/FindMusic.vue'
+import MyMusic from './views/MyMusic.vue'
+import MyFriend from './views/MyFriend.vue'
+const router = new VueRouter(
+  {
+    routes:[
+      {path:"/find",component:FindMusic},
+      {path:"/my",component:MyMusic},
+      {path:"/friend",component:MyFriend}
+    ]
+  }
+)
+
+
+new Vue({
+  render: h => h(App),
+  router
+}).$mount('#app')
+```
+
+`App.vue`
+
+```vue
+<template>
+  <div>
+    <div class="tab-container">
+      <div class="tab active"><a href="#/find">发现音乐</a></div>
+      <div class="tab"><a href="#/my">我的音乐</a></div>
+      <div class="tab"><a href="#/friend">朋友</a></div>
+    </div>
+    <div class="tab-content">
+      <router-view></router-view>
+    </div>
+  </div>
+  
+</template>
+
+<script>
+export default {
+
+}
+</script>
+
+<style>
+    .tab-container {
+        display: flex;
+        background-color: #333;
+        width: 60%;
+        margin:30px auto;
+    }
+    .tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        color: white;
+        cursor: pointer;
+    }
+    .active {
+        background-color: #444;
+    }
+    a {
+    all: unset;
+    }
+    .tab-content {
+      width: 60%;
+      font-size: 50px;
+      font-weight: 700;
+      color:red;
+      margin: 20px auto;
+      text-align: center;
+    }
+</style>
+```
+
+`FindMusic.vue`
+
+```vue
+<template>
+  <div>
+    <p>发现音乐</p>
+  </div>
+</template>
+
+<script>
+export default {
+
+}
+</script>
+
+<style>
+
+</style>
+```
+
+`MyMusic.vue`
+
+```vue
+<template>
+  <div>
+    <p>我的音乐</p>
+  </div>
+</template>
+
+<script>
+export default {
+
+}
+</script>
+
+<style>
+
+</style>
+```
+
+`MyFriend.vue`
+
+```vue
+<template>
+  <div>
+    <p>我的朋友列表</p>
+  </div>
+</template>
+
+<script>
+export default {
+
+}
+</script>
+
+<style>
+
+</style>
+```
+
+**效果**
+
+![image-20250427155231632](./vue05/image-20250427155231632.png)
 
 
 
+### 组件分类及其存放位置
+
+在`vue`项目中，一部分组件放置在`src/views`目录下，另一部分组件放置在`src/components`目录下
+
+其实`.vue`文件可以分为两类，**页面组件**和**复用组件**
+
+页面组件一般需要配合路由去切换使用的，所以页面组件一般放置在`src/views`目录下
+
+复用组件一般在多个不同页面中复用，这类组件一般放置在`src/components`目录下
+
+其实本质都是`.vue`文件，无任何区别，之所以分开位置存放，是为了开发方便以及后续便于维护
 
 ## 路由
