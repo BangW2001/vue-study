@@ -72,17 +72,654 @@ new Vue({
 
 
 
+### 声明式导航--导航链接
+
+`vue-router`提供了一个全局组件`router-link`，可以取代`a`标签，其与`a`标签相比的优势：
+
+- 能跳转，配置`to`属性指定路径，本质还是`a`标签，且路径前无需加`#`
+- 能高亮，默认会提供高亮类名，可以之际设置高亮样式
+
+![image-20250427210601567](vue06/image-20250427210601567.png)
+
+当前点击的`tab`，其会默认添加两个类名`router-link-exact-active`和` router-link-active`
+
+```vue
+<template>
+  <div>
+    <div class="tab-container">
+      <!-- <div class="tab active"><a href="#/find">发现音乐</a></div>
+      <div class="tab"><a href="#/my">我的音乐</a></div>
+      <div class="tab"><a href="#/friend">朋友</a></div> -->
+      <div class="tab active">
+        <router-link to="/find">发现音乐</router-link>
+      </div>
+      <div class="tab"><router-link to="/my">我的音乐</router-link></div>
+      <div class="tab"><router-link to="/friend">我的朋友</router-link></div>
+    </div>
+    <div class="tab-content">
+      <router-view></router-view>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style>
+.tab-container {
+  display: flex;
+  background-color: #333;
+  width: 60%;
+  margin: 30px auto;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+}
+.active {
+  background-color: #444;
+}
+a {
+  all: unset;
+}
+.tab-content {
+  width: 60%;
+  font-size: 50px;
+  font-weight: 700;
+  color: red;
+  margin: 20px auto;
+  text-align: center;
+}
+.router-link-active {
+  background-color: rebeccapurple;
+}
+</style>
+```
+
+#### 声明式导航--两个类名
+
+`router-link`会自动给当前导航元素添加两个高亮类名`router-link-exact-active`和` router-link-active`，那么这两个类名有什么区别？
+
+- `router-link-active` 模糊匹配，用的比较多
+  - `to=/my`可以匹配`/my`、`/my/a`、`/my/b`...
+  - 即如果访问的链接为`/my/a`，则`/my`对应的导航栏也会高亮
+- `router-link-exact-active` 精确匹配
+  - `to=/my`仅仅可以匹配`/my`
+
+**自定义高亮类名**
+
+`router-link`自动添加的两个高亮类名比较长，如果我们希望能够定义类名怎么办？
+
+可以在创建路由对象时，重新指定这两个类名的名称
+
+```vue
+const router = new VueRouter({
+	routes:[],
+	linkActiveClass:"类名",
+	linkExactActiveClass:"类名"
+})
+```
 
 
 
+#### 声明式导航--跳转传参
+
+在跳转路由时，进行传值
+
+##### 查询参数传参
+
+**语法格式**
+
+`to="/path?参数名1=值1&参数名2=值2"`
+
+**对应页面组件接收传递过来的值**
+
+`$route.query.参数名`
+
+**实例**
+
+`src/router/index.js`
+
+```js
+import VueRouter from "vue-router";
+import Vue from "vue";
+
+Vue.use(VueRouter)
+
+import SearchPage from "@/views/SearchPage.vue";
+const router = new VueRouter({
+  routes: [
+    { path: "/search", component: SearchPage }
+  ]
+})
+
+export default router
+```
+
+`main.js`
+
+```js
+import Vue from 'vue'
+import App from './App.vue'
+
+Vue.config.productionTip = false
+
+import router from '@/router/index.js'
+new Vue({
+  render: h => h(App),
+  router
+}).$mount('#app')
+
+```
+
+`App.vue`
+
+```vue
+<template>
+  <div>
+    <div class="header">
+      <div class="logo">
+        <img src="./assets/logohm.png" alt="Logo" width="50" height="50" />
+        <span>黑马程序员</span>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="请输入搜索内容" />
+      <input type="submit" value="搜索一下" />
+    </div>
+
+    <div class="hot-search">
+      热门搜索：
+      <router-link to="/search?words=黑马程序员">黑马程序员</router-link>
+      <router-link to="/search?words=前端培训">前端培训</router-link>
+      <router-link to="/search?words=如何成为前端大牛"
+        >如何成为前端大牛</router-link
+      >
+    </div>
+    <div class="content">
+      <router-view></router-view>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  width: 60%;
+  margin: 10px auto;
+}
+.header {
+  text-align: center;
+  margin-top: 20px;
+}
+.logo {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+.search-bar {
+  text-align: center;
+  margin: 20px 0;
+}
+.search-bar input[type="text"] {
+  width: 60%;
+  padding: 10px;
+  font-size: 16px;
+}
+.search-bar input[type="submit"] {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.hot-search {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.hot-search a {
+  margin: 0 5px;
+  color: #d9534f;
+  text-decoration: none;
+  border: 1px solid #d9534f;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.content {
+  margin: 30px auto;
+  width: 40%;
+  text-align: center;
+}
+</style>
+```
+
+`SearchPage.vue`
+
+```vue
+<template>
+  <div>
+    <h2>当前为所有总页面</h2>
+    <p>搜索的关键字:{{ $route.query.words }}</p>
+  </div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style>
+</style>
+```
+
+##### 动态路由传参
+
+**配置动态路由**
+
+```vue
+const router = new VueRouter({
+	routes:[
+		{path:"/xxx/:参数名"}
+	]
+})
+```
+
+**配置导航链接**
+
+`to="/path/参数值"`
+
+**对应页面组件接收传递过来的值**
+
+`$route.params.参数名`
+
+注意：`path:"/xxx/:参数名"`这种路由配置必须要传递对应的参数，如果不传参数，无法匹配，如果希望不传参数也能匹配，则可以加个可选符`?`，`path:/xxx/:参数名?`
+
+**实例**
+
+`src/router/index.js`
+
+```js
+import VueRouter from "vue-router";
+import Vue from "vue";
+
+Vue.use(VueRouter)
+
+import SearchPage from "@/views/SearchPage.vue";
+const router = new VueRouter({
+  routes: [
+    { path: "/search/:words", component: SearchPage }
+  ]
+})
+
+export default router
+```
+
+`main.js`
+
+```vue
+import Vue from 'vue'
+import App from './App.vue'
+
+Vue.config.productionTip = false
+
+import router from '@/router/index.js'
+new Vue({
+  render: h => h(App),
+  router
+}).$mount('#app')
+```
+
+`App.vue`
+
+```vue
+<template>
+  <div>
+    <div class="header">
+      <div class="logo">
+        <img src="./assets/logohm.png" alt="Logo" width="50" height="50" />
+        <span>黑马程序员</span>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="请输入搜索内容" />
+      <input type="submit" value="搜索一下" />
+    </div>
+
+    <div class="hot-search">
+      热门搜索：
+      <router-link to="/search/黑马程序员">黑马程序员</router-link>
+      <router-link to="/search/前端培训">前端培训</router-link>
+      <router-link to="/search/如何成为前端大牛">如何成为前端大牛</router-link>
+    </div>
+    <div class="content">
+      <router-view></router-view>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  width: 60%;
+  margin: 10px auto;
+}
+.header {
+  text-align: center;
+  margin-top: 20px;
+}
+.logo {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+.search-bar {
+  text-align: center;
+  margin: 20px 0;
+}
+.search-bar input[type="text"] {
+  width: 60%;
+  padding: 10px;
+  font-size: 16px;
+}
+.search-bar input[type="submit"] {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.hot-search {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.hot-search a {
+  margin: 0 5px;
+  color: #d9534f;
+  text-decoration: none;
+  border: 1px solid #d9534f;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.content {
+  margin: 30px auto;
+  width: 40%;
+  text-align: center;
+}
+</style>
+```
+
+`SearchPage.vue`
+
+```vue
+<template>
+  <div>
+    <h2>当前为所有总页面</h2>
+    <p>搜索的关键字:{{ $route.params.words }}</p>
+  </div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style>
+</style>
+```
+
+##### 查询参数传参 vs 动态路由传参
+
+- 查询参数传参比较适合传多个参数
+- 动态路由传参优雅简洁，适合传单个参数
+
+### 路由重定向
+
+重定向：匹配到某一个路径之后，强制跳转到另一个路径
+
+语法：`{path:匹配路径,redirect:重定向到的路径}`
+
+### Vue路由--404
+
+当路径找不到匹配时，给一个提示页面
+
+语法：配在路由最后，`{path:"*"（任意路径）}`,前面不匹配就命中最后这个
+
+### Vue路由--模式设置
+
+背景：路由的路径看起来不自然，有`#`，能否切换成真正的路径形式
+
+- hash路由(Vue默认)，例如`http://localhost:8080/#/home`
+- history路由(常用),例如`http:localhost:8080/home`
+
+语法：
+
+```vue
+const router = new VueRouter({
+	routes,
+	mode:"history"
+})
+```
 
 
 
+### 编程式导航
+
+#### 基本跳转
+
+点击按钮如何实现页面的跳转，比如场景：输入关键词，点击搜索按钮；点击登录按钮
+
+编程式导航：用JS代码来进行跳转
+
+常见两种实现方式：
+
+- path路径跳转
+- name命名路由跳转
+
+##### path路径跳转
+
+**语法**
+
+```vue
+this.$router.push("路由路径")
+或者完整写法
+this.$router.push({
+	path:"路由路径"
+})
+```
+
+**实例**
+
+`App.vue`
+
+```vue
+<template>
+  <div>
+    <div class="header">
+      <div class="logo">
+        <img src="./assets/logohm.png" alt="Logo" width="50" height="50" />
+        <span>黑马程序员</span>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="请输入搜索内容" v-model="queryWord" />
+      <input type="submit" value="搜索一下" @click="search" />
+    </div>
+
+    <div class="hot-search">
+      热门搜索：
+      <router-link to="/search/黑马程序员">黑马程序员</router-link>
+      <router-link to="/search/前端培训">前端培训</router-link>
+      <router-link to="/search/如何成为前端大牛">如何成为前端大牛</router-link>
+    </div>
+    <div class="content">
+      <router-view></router-view>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      queryWord: "",
+    };
+  },
+  methods: {
+    search() {
+      this.$router.push(`/search/${this.queryWord}`);
+    },
+  },
+};
+</script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  width: 60%;
+  margin: 10px auto;
+}
+.header {
+  text-align: center;
+  margin-top: 20px;
+}
+.logo {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+.search-bar {
+  text-align: center;
+  margin: 20px 0;
+}
+.search-bar input[type="text"] {
+  width: 60%;
+  padding: 10px;
+  font-size: 16px;
+}
+.search-bar input[type="submit"] {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.hot-search {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.hot-search a {
+  margin: 0 5px;
+  color: #d9534f;
+  text-decoration: none;
+  border: 1px solid #d9534f;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.content {
+  margin: 30px auto;
+  width: 40%;
+  text-align: center;
+}
+</style>
+```
+
+##### name命名路由跳转
+
+该方式适用于path路径长的场景
+
+**语法**
+
+- 配置路由时，给路由添加名字
+
+```vue
+{name:"路由名",path:"路径",component:"对应的组件名称"}
+```
+
+- 路由跳转
+
+```vue
+this.$router.push({
+	name:路由名
+})
+```
 
 
 
+#### 编程式导航--路由传参
 
+背景：点击搜索按钮，跳转时传参如何实现？
 
+##### path路径跳转传参
+
+###### 查询参数传参
+
+```vue
+this.$router.push("路径?参数名1=参数值1&参数名2=参数值2")
+或者完整的写法
+this.$router.push({
+	path:"路径",
+	query:{
+		参数名1:参数值1,
+		参数名2:参数值2
+	}
+})
+```
+
+对应页面接收参数：`$route.query.参数名`
+
+###### 动态路由传参
+
+```vue
+this.$router.push("/路径/参数值")
+或者完整写法
+this.$router.push("/路径/参数值")
+```
+
+对应页面接收参数：`$route.params.参数名`
+
+##### name命名路由跳转传参
+
+###### 查询参数传参
+
+```vue
+this.$router.push({
+	name:"路由名字",
+	query:{
+		参数名1:"参数值1",
+		参数名2:"参数值2"
+	}
+})
+```
+
+**动态路由传参**
+
+```vue
+this.$router.push({
+	name:"路由名字",
+	params:{
+		参数名:"参数值"
+	}
+})
+```
 
 
 

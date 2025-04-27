@@ -8,11 +8,13 @@ import MyMusic from '../views/MyMusic.vue'
 import MyFriend from '../views/MyFriend.vue'
 const router = new VueRouter(
   {
-    routes:[
-      {path:"/find",component:FindMusic},
-      {path:"/my",component:MyMusic},
-      {path:"/friend",component:MyFriend}
-    ]
+    routes: [
+      { path: "/find", component: FindMusic },
+      { path: "/my", component: MyMusic },
+      { path: "/friend", component: MyFriend }
+    ],
+    linkActiveClass: "active",
+    linkExactActiveClass: "exact-active"
   }
 )
 export default router
