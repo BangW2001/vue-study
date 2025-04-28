@@ -723,11 +723,166 @@ this.$router.push({
 
 
 
+### 嵌套路由
+
+在一级路由里面嵌套二级路由
+
+**语法**
+
+```vue
+const router = new VueRouter({
+	routes:[
+		{
+			path:"一级路由路径",
+			component:对应的组件,
+			children:[//在children中配置二级路由
+				{path:二级路由路径,component:对应的组件}
+			]
+		}
+	]
+})
+```
+
+注意：为了能够展示二级路由页面，在一级路由页面中也要配置路由出口`<router-view></router-view>`
+
+### 组件缓存 keep-alive
+
+在列表页，点击一个进入对应详情页，点击返回，混动条自动切换到了最开头的位置，原来点击的位置看不到了，这样用户体验不好
+
+**背景：**从面经点到详情页，又点返回，数据重新加载了，但是希望能够回到原来的位置
+
+**原因：**路由跳转之后，组件被销毁了，返回回来的组件又被重建了，所以数据重新被加载了
+
+**解决方案：**利用keep-alive将组件缓存下来
+
+#### keep-alive
+
+`keep-alive`是`Vue`内置组件，当它包裹动态组件时，会缓存不活动的组件实例，而不是销毁它们
+
+`keep-alive`时一个抽象组件，它自身不会渲染成一个`DOM`元素，也不会出现在父组件链中
+
+**keep-alive优势**
+
+- 在组件切换过程中，把切换出去的组件保留在内存中，防止重复渲染dom
+- 减少加载时间以及性能消耗，提高用户体验性
+
+**语法**
+
+```vue
+<keep-alive>
+	<router-view></router-view>
+</keep-alive>
+```
+
+`keep-alive`默认会缓存所有的组件，但是可以通过配置属性值来对其进行控制
+
+**keep-alive三个属性**
+
+- include：组件名数组，只有匹配的组件才会被缓存
+- exclude：组件名数组，任何匹配的组件都不会被缓存
+- max：最多可以缓存多少组件实例
+
+```vue
+<keep-alive :include="['组件名']">
+	<router-view></router-view>
+</keep-alive>
+```
 
 
 
+**补充**
+
+`keep-alive`缓存的组件会增加两个生命周期钩子函数
+
+- `actived`：激活时，组件被看到时会被触发
+- `deactived`：失活时，离开页面组件看不见时触发
+
+因为组件一旦被缓存，就不会执行组件的`created`、`mounted`和`destroyed`函数
 
 
+
+## 常规项目实现基本步骤
+
+1. 配置路由
+2. 实现具体页面的功能
+
+
+
+## 自定义创建项目
+
+基于`VueCli`自定义创建项目架子，前面使用路由时，需要手动导包、注册、创建路由实例、注入vue对象，步骤比较繁琐
+
+本节介绍如何自定义创建项目架子
+
+**步骤**
+
+```mermaid
+graph LR
+安装脚手架-->创建项目-->选择自定义-->Babel/Router/CSS/Linter
+```
+
+![image-20250428151254362](./vue06/image-20250428151254362.png)
+
+![image-20250428151341820](./vue06/image-20250428151341820.png)
+
+![image-20250428151408157](./vue06/image-20250428151408157.png)
+
+![image-20250428151450757](./vue06/image-20250428151450757.png)
+
+![image-20250428151548918](./vue06/image-20250428151548918.png)
+
+![image-20250428151657264](./vue06/image-20250428151657264.png)
+
+![image-20250428151852692](./vue06/image-20250428151852692.png)
+
+![image-20250428151951984](./vue06/image-20250428151951984.png)
+
+
+
+## ESlint代码规范
+
+### 代码规范
+
+代码规范即一套写代码的约定规则，例如赋值符号的左右是否需要空格，一句话结束是否需要加`;`
+
+Vue代码常用的规范：[JavaScript Standard Style规范](https://standardjs.com/rules-zhcn)
+
+### 代码规范错误
+
+如果编写的代码不符合standard的要求，`ESlint`会进行错误提示
+
+![image-20250428153308392](./vue06/image-20250428153308392.png)
+
+### 解决代码规范错误
+
+#### 手动修正
+
+根据错误提示一项一项手动去修改纠正
+
+如果不认识命令行中的语法报错的含义，可以根据错误代码去 [ESlint规则表](zh-hans.eslint.org/docs/latest/rules/)查找具体含义
+
+#### 自动修正
+
+基于`vscode`插件`ESLint`高亮错误，并通过配置自动帮助我们修复错误
+
+<img src="./vue06/image-20250428154251183.png" alt="image-20250428154251183" style="zoom: 67%;" />
+
+添加配置，使得文件保存时，`ESlint`自动帮我们修复错误
+
+```json
+//当保存时，eslint自动帮助我们修复错误
+"editor.codeActionsOnSave": {
+    "source.fixAll": true
+},
+//保存代码，不自动格式化
+"editor.formatOnSave": false
+```
+
+![image-20250428154925327](./vue06/image-20250428154925327.png)
+
+<img src="./vue06/image-20250428154958948.png" alt="image-20250428154958948" style="zoom: 67%;" />
+
+<img src="./vue06/image-20250428155047315.png" alt="image-20250428155047315" style="zoom:67%;" />
 
 
 
